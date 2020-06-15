@@ -29,12 +29,13 @@ int main(void) {
 	PORTB &= ~(1<<0);
 	uart_init(UBRR_VAL);
 	sei();
-	uart_putsn("RX NRF24L01");
+	uart_putsn("NRF24L01 - RX");
 	init_status = nrf24l01_init();
 	nrf24l01_init_external_interrupt();
 	nrf24l01_open_wrting_pipe(0xF0F0F0F0E101);
 	nrf24l01_open_reading_pipe(1, 0xF0F0F0F0F101);
 	nrf24l01_set_pa_level(RF24_PA_MAX);
+	status = nrf24l01_get_status();
 	sprintf(print_buff, "STATUS\t\t = 0x%02x RX_DR=%x TX_DS=%x MAX_RT=%x RX_P_NO=%x TX_FULL=%x\r\n", status,
 			(status & _BV(RX_DR))?1:0,
 					(status & _BV(TX_DS))?1:0,
@@ -56,10 +57,10 @@ int main(void) {
 
 
 void parse_nrf_data(char *buff) {
-	uart_puts("RX[: ");
+	uart_puts("RX[ ");
 	uint8_t len = strlen(buff);
 	uart_putint(len, 10);
-	uart_puts("]");
+	uart_puts(" ]: ");
 	uart_puts(buff);
 	uart_putsn("");
 	PORTB ^= (1<<0);
